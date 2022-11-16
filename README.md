@@ -1,6 +1,7 @@
 # CodeComposerStudio-ST7735
 
-Project running in Code Composer Studio for CC1350 Launchpad.
+#ATTENTION
+Project running in Code Composer Studio for CC1350 Launchpad. If you just import the project to CCS doesn't work the project. You should do define "tirtos_builds_CC1350_LAUNCHXL_release_ccs" because project run in RTOS after import, you can't want this method you can use other method. For example copy the ST7735.h file your project this is simple than other method. 
 
 ![st7735](https://user-images.githubusercontent.com/58117960/201872901-4a890e25-c713-4aea-87e9-642263738467.png)
 
