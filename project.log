@@ -1,0 +1,48 @@
+
+
+!CONFIGURATION: 'Debug__opt_for_speed__0' (com.ti.ccstudio.buildDefinitions.TMS470.Debug.633104813__opt_for_speed__0) [Tue Nov 15 10:22:54 TRT 2022]
+
+	!TOOL: 'Arm Compiler' (com.ti.ccstudio.buildDefinitions.TMS470_20.2.exe.compilerDebug.1943346285)
+
+		!NOTE: Deprecated build flag '--float_support=vfplib' was migrated to '--float_support=none'.
+
+
+
+!CONFIGURATION: 'Debug__opt_for_speed__1' (com.ti.ccstudio.buildDefinitions.TMS470.Debug.633104813__opt_for_speed__1) [Tue Nov 15 10:23:02 TRT 2022]
+
+	!TOOL: 'Arm Compiler' (com.ti.ccstudio.buildDefinitions.TMS470_20.2.exe.compilerDebug.1152801417)
+
+		!NOTE: Deprecated build flag '--float_support=vfplib' was migrated to '--float_support=none'.
+
+
+
+!CONFIGURATION: 'Debug__opt_for_speed__2' (com.ti.ccstudio.buildDefinitions.TMS470.Debug.633104813__opt_for_speed__2) [Tue Nov 15 10:23:10 TRT 2022]
+
+	!TOOL: 'Arm Compiler' (com.ti.ccstudio.buildDefinitions.TMS470_20.2.exe.compilerDebug.723686138)
+
+		!NOTE: Deprecated build flag '--float_support=vfplib' was migrated to '--float_support=none'.
+
+
+
+!CONFIGURATION: 'Debug__opt_for_speed__3' (com.ti.ccstudio.buildDefinitions.TMS470.Debug.633104813__opt_for_speed__3) [Tue Nov 15 10:23:17 TRT 2022]
+
+	!TOOL: 'Arm Compiler' (com.ti.ccstudio.buildDefinitions.TMS470_20.2.exe.compilerDebug.1508629482)
+
+		!NOTE: Deprecated build flag '--float_support=vfplib' was migrated to '--float_support=none'.
+
+
+
+!CONFIGURATION: 'Debug__opt_for_speed__4' (com.ti.ccstudio.buildDefinitions.TMS470.Debug.633104813__opt_for_speed__4) [Tue Nov 15 10:23:25 TRT 2022]
+
+	!TOOL: 'Arm Compiler' (com.ti.ccstudio.buildDefinitions.TMS470_20.2.exe.compilerDebug.1257813869)
+
+		!NOTE: Deprecated build flag '--float_support=vfplib' was migrated to '--float_support=none'.
+
+
+
+!CONFIGURATION: 'Debug__opt_for_speed__5' (com.ti.ccstudio.buildDefinitions.TMS470.Debug.633104813__opt_for_speed__5) [Tue Nov 15 10:23:34 TRT 2022]
+
+	!TOOL: 'Arm Compiler' (com.ti.ccstudio.buildDefinitions.TMS470_20.2.exe.compilerDebug.1859141159)
+
+		!NOTE: Deprecated build flag '--float_support=vfplib' was migrated to '--float_support=none'.
+
