@@ -1,5 +1,5 @@
 
-# CodeComposerStudio-ST7735
+# Code omposer Studio - ST7735
 
 #ATTENTION
 
