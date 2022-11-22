@@ -1,5 +1,5 @@
+#include <pictures.h>
 #include <ST7735.h>
-#include "resimler.h"
 uint64_t x=0;
 const uint64_t maxCount=100000;
 char temp[]="      ";
@@ -59,7 +59,7 @@ void text1()
     ST7735_DrawCharS(24,30,temp[4],ST7735_BLACK,ST7735_WHITE,1);
     ST7735_DrawCharS(30,30,temp[5],ST7735_BLACK,ST7735_WHITE,1);
     ST7735_DrawCharS(36,30,temp[6],ST7735_BLACK,ST7735_WHITE,1);
-    ST7735_DrawBitmap(140,15,bataryaKademe4,20,20);
+    ST7735_DrawBitmap(140,15,batteryLevel4,20,20);
 
 
     ST7735_DrawCharS(0 ,40,temp[0],ST7735_BLACK,ST7735_WHITE,2);
@@ -69,7 +69,7 @@ void text1()
     ST7735_DrawCharS(48,40,temp[4],ST7735_BLACK,ST7735_WHITE,2);
     ST7735_DrawCharS(60,40,temp[5],ST7735_BLACK,ST7735_WHITE,2);
     ST7735_DrawCharS(72,40,temp[6],ST7735_BLACK,ST7735_WHITE,2);
-    ST7735_DrawBitmap(140,15,bataryaKademe3,20,20);
+    ST7735_DrawBitmap(140,15,batteryLevel3,20,20);
 
     ST7735_DrawCharS(0 ,60,temp[0],ST7735_BLACK,ST7735_WHITE,3);
     ST7735_DrawCharS(17,60,temp[1],ST7735_BLACK,ST7735_WHITE,3);
@@ -78,7 +78,7 @@ void text1()
     ST7735_DrawCharS(68,60,temp[4],ST7735_BLACK,ST7735_WHITE,3);
     ST7735_DrawCharS(85,60,temp[5],ST7735_BLACK,ST7735_WHITE,3);
     ST7735_DrawCharS(102,60,temp[6],ST7735_BLACK,ST7735_WHITE,3);
-    ST7735_DrawBitmap(140,15,bataryaKademe2,20,20);
+    ST7735_DrawBitmap(140,15,batteryLevel2,20,20);
 
     ST7735_DrawCharS(0 ,90,temp[0],ST7735_BLACK,ST7735_WHITE,4);
     ST7735_DrawCharS(25,90,temp[1],ST7735_BLACK,ST7735_WHITE,4);
@@ -87,7 +87,7 @@ void text1()
     ST7735_DrawCharS(100,90,temp[4],ST7735_BLACK,ST7735_WHITE,4);
     ST7735_DrawCharS(125,90,temp[5],ST7735_BLACK,ST7735_WHITE,4);
     ST7735_DrawCharS(150,90,temp[6],ST7735_BLACK,ST7735_WHITE,4);
-    ST7735_DrawBitmap(140,15,bataryaKademe1,20,20);
+    ST7735_DrawBitmap(140,15,batteryLevel1,20,20);
 
     ST7735_DrawCharS(0 ,90,temp[0],ST7735_BLACK,ST7735_WHITE,4);
     ST7735_DrawCharS(25,90,temp[1],ST7735_BLACK,ST7735_WHITE,4);
@@ -96,7 +96,7 @@ void text1()
     ST7735_DrawCharS(100,90,temp[4],ST7735_BLACK,ST7735_WHITE,4);
     ST7735_DrawCharS(125,90,temp[5],ST7735_BLACK,ST7735_WHITE,4);
     ST7735_DrawCharS(150,90,temp[6],ST7735_BLACK,ST7735_WHITE,4);
-    ST7735_DrawBitmap(140,15,bataryaKademe0,20,20);
+    ST7735_DrawBitmap(140,15,batteryLevel0,20,20);
 
 
 
@@ -122,7 +122,7 @@ int main(void)
             text1();
 
             delay(1000);
-            x=x+10;
+            x=x+1;
         }
         else
         {
