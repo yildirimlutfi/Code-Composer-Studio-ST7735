@@ -554,18 +554,20 @@ void ST7735_DrawPixel(int16_t x, int16_t y, uint16_t color) {
 //        h     vertical height of the line
 //        color 16-bit color, which can be produced by ST7735_Color565()
 // Output: none
-void ST7735_DrawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color) {
-  uint8_t hi = color >> 8, lo = color;
+void ST7735_DrawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
+{
+    uint8_t hi = color >> 8, lo = color;
 
-  // Rudimentary clipping
-  if((x >= _width) || (y >= _height)) return;
-  if((y+h-1) >= _height) h = _height-y;
-  setAddrWindow(x, y, x, y+h-1);
+    // Rudimentary clipping
+    if((x >= _width) || (y >= _height)) return;
+    if((y+h-1) >= _height) h = _height-y;
+    setAddrWindow(x, y, x, y+h-1);
 
-  while (h--) {
-    WriteParameter(hi);
-    WriteParameter(lo);
-  }
+    while (h--)
+    {
+        WriteParameter(hi);
+        WriteParameter(lo);
+    }
 }
 
 
@@ -578,18 +580,20 @@ void ST7735_DrawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color) {
 //        w     horizontal width of the line
 //        color 16-bit color, which can be produced by ST7735_Color565()
 // Output: none
-void ST7735_DrawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color) {
-  uint8_t hi = color >> 8, lo = color;
+void ST7735_DrawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color)
+{
+    uint8_t hi = color >> 8, lo = color;
 
-  // Rudimentary clipping
-  if((x >= _width) || (y >= _height)) return;
-  if((x+w-1) >= _width)  w = _width-x;
-  setAddrWindow(x, y, x+w-1, y);
+    // Rudimentary clipping
+    if((x >= _width) || (y >= _height)) return;
+    if((x+w-1) >= _width)  w = _width-x;
+    setAddrWindow(x, y, x+w-1, y);
 
-  while (w--) {
-    WriteParameter(hi);
-    WriteParameter(lo);
-  }
+    while (w--)
+    {
+        WriteParameter(hi);
+        WriteParameter(lo);
+    }
 }
 
 
@@ -628,8 +632,9 @@ void ST7735_FillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
 // Requires 40,971 bytes of transmission
 // Input: color 16-bit color, which can be produced by ST7735_Color565()
 // Output: none
-void ST7735_FillScreen(uint16_t color) {
-  ST7735_FillRect(0, 0, _width, _height, color);  // original
+void ST7735_FillScreen(uint16_t color)
+{
+    ST7735_FillRect(0, 0, _width, _height, color);  // original
 //  screen is actually 129 by 161 pixels, x 0 to 128, y goes from 0 to 160
 }
 
@@ -642,8 +647,9 @@ void ST7735_FillScreen(uint16_t color) {
 //        g green value
 //        b blue value
 // Output: 16-bit color
-uint16_t ST7735_Color565(uint8_t r, uint8_t g, uint8_t b) {
-  return ((b & 0xF8) << 8) | ((g & 0xFC) << 3) | (r >> 3);
+uint16_t ST7735_Color565(uint8_t r, uint8_t g, uint8_t b)
+{
+    return ((b & 0xF8) << 8) | ((g & 0xFC) << 3) | (r >> 3);
 }
 
 
@@ -652,8 +658,9 @@ uint16_t ST7735_Color565(uint8_t r, uint8_t g, uint8_t b) {
 // green is unchanged.
 // Input: x 16-bit color in format B, G, R
 // Output: 16-bit color in format R, G, B
-uint16_t ST7735_SwapColor(uint16_t x) {
-  return (x << 11) | (x & 0x07E0) | (x >> 11);
+uint16_t ST7735_SwapColor(uint16_t x)
+{
+    return (x << 11) | (x & 0x07E0) | (x >> 11);
 }
 
 
@@ -678,52 +685,65 @@ uint16_t ST7735_SwapColor(uint16_t x) {
 // Must be less than or equal to 128 pixels wide by 160 pixels high
 void ST7735_DrawBitmap(int16_t x, int16_t y, const uint16_t *image, int16_t w, int16_t h)
 {
-  int16_t skipC = 0;                      // non-zero if columns need to be skipped due to clipping
-  int16_t originalWidth = w;              // save this value; even if not all columns fit on the screen, the image is still this width in ROM
-  int i = w*(h - 1);
+    int16_t skipC = 0;                      // non-zero if columns need to be skipped due to clipping
+    int16_t originalWidth = w;              // save this value; even if not all columns fit on the screen, the image is still this width in ROM
+    int i = w*(h - 1);
 
-  if((x >= _width) || ((y - h + 1) >= _height) || ((x + w) <= 0) || (y < 0)){
-    return;                             // image is totally off the screen, do nothing
-  }
-  if((w > _width) || (h > _height)){    // image is too wide for the screen, do nothing
-    //***This isn't necessarily a fatal error, but it makes the
-    //following logic much more complicated, since you can have
-    //an image that exceeds multiple boundaries and needs to be
-    //clipped on more than one side.
-    return;
-  }
-  if((x + w - 1) >= _width){            // image exceeds right of screen
-    skipC = (x + w) - _width;           // skip cut off columns
-    w = _width - x;
-  }
-  if((y - h + 1) < 0){                  // image exceeds top of screen
-    i = i - (h - y - 1)*originalWidth;  // skip the last cut off rows
-    h = y + 1;
-  }
-  if(x < 0){                            // image exceeds left of screen
-    w = w + x;
-    skipC = -1*x;                       // skip cut off columns
-    i = i - x;                          // skip the first cut off columns
-    x = 0;
-  }
-  if(y >= _height){                     // image exceeds bottom of screen
-    h = h - (y - _height + 1);
-    y = _height - 1;
-  }
-
-  setAddrWindow(x, y-h+1, x+w-1, y);
-
-  for(y=0; y<h; y=y+1){
-    for(x=0; x<w; x=x+1){
-                                        // send the top 8 bits
-      WriteParameter((uint8_t)(image[i] >> 8));
-                                        // send the bottom 8 bits
-      WriteParameter((uint8_t)image[i]);
-      i = i + 1;                        // go to the next pixel
+    if((x >= _width) || ((y - h + 1) >= _height) || ((x + w) <= 0) || (y < 0))
+    {
+        return;                             // image is totally off the screen, do nothing
     }
-    i = i + skipC;
-    i = i - 2*originalWidth;
-  }
+    if((w > _width) || (h > _height))
+    {
+        // image is too wide for the screen, do nothing
+        //***This isn't necessarily a fatal error, but it makes the
+        //following logic much more complicated, since you can have
+        //an image that exceeds multiple boundaries and needs to be
+        //clipped on more than one side.
+        return;
+    }
+    if((x + w - 1) >= _width)
+    {
+        // image exceeds right of screen
+        skipC = (x + w) - _width;           // skip cut off columns
+        w = _width - x;
+    }
+    if((y - h + 1) < 0)
+    {
+        // image exceeds top of screen
+        i = i - (h - y - 1)*originalWidth;  // skip the last cut off rows
+        h = y + 1;
+    }
+    if(x < 0)
+    {
+        // image exceeds left of screen
+        w = w + x;
+        skipC = -1*x;                       // skip cut off columns
+        i = i - x;                          // skip the first cut off columns
+        x = 0;
+    }
+    if(y >= _height)
+    {
+        // image exceeds bottom of screen
+        h = h - (y - _height + 1);
+        y = _height - 1;
+    }
+
+    setAddrWindow(x, y-h+1, x+w-1, y);
+
+    for(y=0; y<h; y=y+1)
+    {
+        for(x=0; x<w; x=x+1)
+        {
+            // send the top 8 bits
+            WriteParameter((uint8_t)(image[i] >> 8));
+            // send the bottom 8 bits
+            WriteParameter((uint8_t)image[i]);
+            i = i + 1;                        // go to the next pixel
+        }
+        i = i + skipC;
+        i = i - 2*originalWidth;
+    }
 }
 
 //------------ST7735_DrawCharS------------
@@ -791,17 +811,19 @@ void ST7735_DrawCharS(int16_t x, int16_t y, char c, int16_t textColor, int16_t b
 //        textColor 16-bit color of the characters
 // bgColor is Black and size is 1
 // Output: number of characters printed
-uint32_t ST7735_DrawString(uint16_t x, uint16_t y, char *pt, int16_t textColor){
-   uint32_t count = 0;
-  if(y>15) return 0;
-  while(*pt){
-    ST7735_DrawCharS(x*6, y*10, *pt, textColor, ST7735_BLACK, 1);
-    pt++;
-    x = x+1;
-    if(x>20) return count;  // number of characters printed
-    count++;
-  }
-  return count;  // number of characters printed
+uint32_t ST7735_DrawString(uint16_t x, uint16_t y, char *pt, int16_t textColor)
+{
+    uint32_t count = 0;
+    if(y>15) return 0;
+    while(*pt)
+    {
+        ST7735_DrawCharS(x*6, y*10, *pt, textColor, ST7735_BLACK, 1);
+        pt++;
+        x = x+1;
+        if(x>20) return count;  // number of characters printed
+        count++;
+    }
+    return count;  // number of characters printed
 }
 
 
@@ -814,15 +836,17 @@ uint32_t ST7735_DrawString(uint16_t x, uint16_t y, char *pt, int16_t textColor){
 char Message[12];
 uint32_t Messageindex;
 
-void fillmessage(uint32_t n){
-// This function uses recursion to convert decimal number
-//   of unspecified length as an ASCII string
-  if(n >= 10){
-    fillmessage(n/10);
-    n = n%10;
-  }
-  Message[Messageindex] = (n+'0'); /* n is between 0 and 9 */
-  if(Messageindex<11)Messageindex++;
+void fillmessage(uint32_t n)
+{
+    // This function uses recursion to convert decimal number
+    //   of unspecified length as an ASCII string
+    if(n >= 10)
+    {
+        fillmessage(n/10);
+        n = n%10;
+    }
+    Message[Messageindex] = (n+'0'); /* n is between 0 and 9 */
+    if(Messageindex<11)Messageindex++;
 }
 
 //********ST7735_SetCursor*****************
@@ -833,12 +857,15 @@ void fillmessage(uint32_t n){
 //         newY  new Y-position of the cursor (0<=newY<=15)
 // outputs: none
 // This function is must use with ST7735_OutUDec
-void ST7735_SetCursor(uint32_t newX, uint32_t newY){
-  if((newX > 20) || (newY > 15)){       // bad input
-    return;                             // do nothing
-  }
-  StX = newX;
-  StY = newY;
+void ST7735_SetCursor(uint32_t newX, uint32_t newY)
+{
+    if((newX > 20) || (newY > 15))
+    {
+        // bad input
+        return;                             // do nothing
+    }
+    StX = newX;
+    StY = newY;
 }
 
 //-----------------------ST7735_OutUDec-----------------------
@@ -879,48 +906,61 @@ void ST7735_OutUDec(uint32_t n,uint8_t size)
 // Requires 2 bytes of transmission
 // Input: m new rotation value (0 to 3)
 // Output: none
-void ST7735_SetRotation(uint8_t m) {
-
-  WriteCommand(ST7735_MADCTL);
-  Rotation = m % 4; // can't be higher than 3
-  switch (Rotation) {
-   case 0:
-     if (TabColor == INITR_BLACKTAB) {
-       WriteParameter(MADCTL_MX | MADCTL_MY | MADCTL_RGB);
-     } else {
-       WriteParameter(MADCTL_MX | MADCTL_MY | MADCTL_BGR);
-     }
-     _width  = ST7735_TFTWIDTH;
-     _height = ST7735_TFTHEIGHT;
-     break;
-   case 1:
-     if (TabColor == INITR_BLACKTAB) {
-       WriteParameter(MADCTL_MY | MADCTL_MV | MADCTL_RGB);
-     } else {
-       WriteParameter(MADCTL_MY | MADCTL_MV | MADCTL_BGR);
-     }
-     _width  = ST7735_TFTHEIGHT;
-     _height = ST7735_TFTWIDTH;
-     break;
-  case 2:
-     if (TabColor == INITR_BLACKTAB) {
-       WriteParameter(MADCTL_RGB);
-     } else {
-       WriteParameter(MADCTL_BGR);
-     }
-     _width  = ST7735_TFTWIDTH;
-     _height = ST7735_TFTHEIGHT;
-    break;
-   case 3:
-     if (TabColor == INITR_BLACKTAB) {
-       WriteParameter(MADCTL_MX | MADCTL_MV | MADCTL_RGB);
-     } else {
-       WriteParameter(MADCTL_MX | MADCTL_MV | MADCTL_BGR);
-     }
-     _width  = ST7735_TFTHEIGHT;
-     _height = ST7735_TFTWIDTH;
-     break;
-  }
+void ST7735_SetRotation(uint8_t m)
+{
+    WriteCommand(ST7735_MADCTL);
+    Rotation = m % 4; // can't be higher than 3
+    switch (Rotation)
+    {
+    case 0:
+      if (TabColor == INITR_BLACKTAB)
+      {
+          WriteParameter(MADCTL_MX | MADCTL_MY | MADCTL_RGB);
+      }
+      else
+      {
+          WriteParameter(MADCTL_MX | MADCTL_MY | MADCTL_BGR);
+      }
+      _width  = ST7735_TFTWIDTH;
+      _height = ST7735_TFTHEIGHT;
+      break;
+    case 1:
+      if (TabColor == INITR_BLACKTAB)
+      {
+          WriteParameter(MADCTL_MY | MADCTL_MV | MADCTL_RGB);
+      }
+      else
+      {
+          WriteParameter(MADCTL_MY | MADCTL_MV | MADCTL_BGR);
+      }
+      _width  = ST7735_TFTHEIGHT;
+      _height = ST7735_TFTWIDTH;
+      break;
+   case 2:
+       if (TabColor == INITR_BLACKTAB)
+       {
+           WriteParameter(MADCTL_RGB);
+       }
+       else
+       {
+           WriteParameter(MADCTL_BGR);
+       }
+       _width  = ST7735_TFTWIDTH;
+       _height = ST7735_TFTHEIGHT;
+      break;
+    case 3:
+      if (TabColor == INITR_BLACKTAB)
+      {
+          WriteParameter(MADCTL_MX | MADCTL_MV | MADCTL_RGB);
+      }
+      else
+      {
+          WriteParameter(MADCTL_MX | MADCTL_MV | MADCTL_BGR);
+      }
+      _width  = ST7735_TFTHEIGHT;
+      _height = ST7735_TFTWIDTH;
+      break;
+    }
 }
 
 
@@ -929,11 +969,15 @@ void ST7735_SetRotation(uint8_t m) {
 // Requires 1 byte of transmission
 // Input: i 0 to disable inversion; non-zero to enable inversion
 // Output: none
-void ST7735_InvertDisplay(int i) {
-  if(i){
-    WriteCommand(ST7735_INVON);
-  } else{
-    WriteCommand(ST7735_INVOFF);
+void ST7735_InvertDisplay(int i)
+{
+  if(i)
+  {
+      WriteCommand(ST7735_INVON);
+  }
+  else
+  {
+      WriteCommand(ST7735_INVOFF);
   }
 }
 // graphics routines
@@ -949,19 +993,23 @@ int32_t Yrange; //YrangeDiv2;
 // This routine clears the display
 // Inputs: ymin and ymax are range of the plot
 // Outputs: none
-void ST7735_PlotClear(int32_t ymin, int32_t ymax){
-  ST7735_FillRect(0, 32, 128, 128, ST7735_Color565(228,228,228)); // light grey
-  if(ymax>ymin){
-    Ymax = ymax;
-    Ymin = ymin;
-    Yrange = ymax-ymin;
-  } else{
-    Ymax = ymin;
-    Ymin = ymax;
-    Yrange = ymax-ymin;
-  }
-  //YrangeDiv2 = Yrange/2;
-  X = 0;
+void ST7735_PlotClear(int32_t ymin, int32_t ymax)
+{
+    ST7735_FillRect(0, 32, 128, 128, ST7735_Color565(228,228,228)); // light grey
+    if(ymax>ymin)
+    {
+        Ymax = ymax;
+        Ymin = ymin;
+        Yrange = ymax-ymin;
+    }
+    else
+    {
+        Ymax = ymin;
+        Ymin = ymax;
+        Yrange = ymax-ymin;
+    }
+    //YrangeDiv2 = Yrange/2;
+    X = 0;
 }
 
 // *************** ST7735_PlotPoint ********************
@@ -969,20 +1017,22 @@ void ST7735_PlotClear(int32_t ymin, int32_t ymax){
 // It does output to display
 // Inputs: y is the y coordinate of the point plotted
 // Outputs: none
-void ST7735_PlotPoint(int32_t y){int32_t j;
-  if(y<Ymin) y=Ymin;
-  if(y>Ymax) y=Ymax;
-  // X goes from 0 to 127
-  // j goes from 159 to 32
-  // y=Ymax maps to j=32
-  // y=Ymin maps to j=159
-  j = 32+(127*(Ymax-y))/Yrange;
-  if(j<32) j = 32;
-  if(j>159) j = 159;
-  ST7735_DrawPixel(X,   j,   ST7735_BLUE);
-  ST7735_DrawPixel(X+1, j,   ST7735_BLUE);
-  ST7735_DrawPixel(X,   j+1, ST7735_BLUE);
-  ST7735_DrawPixel(X+1, j+1, ST7735_BLUE);
+void ST7735_PlotPoint(int32_t y)
+{
+    int32_t j;
+    if(y<Ymin) y=Ymin;
+    if(y>Ymax) y=Ymax;
+    // X goes from 0 to 127
+    // j goes from 159 to 32
+    // y=Ymax maps to j=32
+    // y=Ymin maps to j=159
+    j = 32+(127*(Ymax-y))/Yrange;
+    if(j<32) j = 32;
+    if(j>159) j = 159;
+    ST7735_DrawPixel(X,   j,   ST7735_BLUE);
+    ST7735_DrawPixel(X+1, j,   ST7735_BLUE);
+    ST7735_DrawPixel(X,   j+1, ST7735_BLUE);
+    ST7735_DrawPixel(X+1, j+1, ST7735_BLUE);
 }
 // *************** ST7735_PlotLine ********************
 // Used in the voltage versus time plot, plot line to new point
@@ -990,33 +1040,42 @@ void ST7735_PlotPoint(int32_t y){int32_t j;
 // Inputs: y is the y coordinate of the point plotted
 // Outputs: none
 int32_t lastj=0;
-void ST7735_PlotLine(int32_t y){int32_t i,j;
-  if(y<Ymin) y=Ymin;
-  if(y>Ymax) y=Ymax;
-  // X goes from 0 to 127
-  // j goes from 159 to 32
-  // y=Ymax maps to j=32
-  // y=Ymin maps to j=159
-  j = 32+(127*(Ymax-y))/Yrange;
-  if(j < 32) j = 32;
-  if(j > 159) j = 159;
-  if(lastj < 32) lastj = j;
-  if(lastj > 159) lastj = j;
-  if(lastj < j){
-    for(i = lastj+1; i<=j ; i++){
-      ST7735_DrawPixel(X,   i,   ST7735_BLUE) ;
-      ST7735_DrawPixel(X+1, i,   ST7735_BLUE) ;
+void ST7735_PlotLine(int32_t y)
+{
+    int32_t i,j;
+    if(y<Ymin) y=Ymin;
+    if(y>Ymax) y=Ymax;
+    // X goes from 0 to 127
+    // j goes from 159 to 32
+    // y=Ymax maps to j=32
+    // y=Ymin maps to j=159
+    j = 32+(127*(Ymax-y))/Yrange;
+    if(j < 32) j = 32;
+    if(j > 159) j = 159;
+    if(lastj < 32) lastj = j;
+    if(lastj > 159) lastj = j;
+    if(lastj < j)
+    {
+        for(i = lastj+1; i<=j ; i++)
+        {
+            ST7735_DrawPixel(X,   i,   ST7735_BLUE) ;
+            ST7735_DrawPixel(X+1, i,   ST7735_BLUE) ;
+        }
     }
-  }else if(lastj > j){
-    for(i = j; i<lastj ; i++){
-      ST7735_DrawPixel(X,   i,   ST7735_BLUE) ;
-      ST7735_DrawPixel(X+1, i,   ST7735_BLUE) ;
+    else if(lastj > j)
+    {
+        for(i = j; i<lastj ; i++)
+        {
+            ST7735_DrawPixel(X,   i,   ST7735_BLUE) ;
+            ST7735_DrawPixel(X+1, i,   ST7735_BLUE) ;
+        }
     }
-  }else{
-    ST7735_DrawPixel(X,   j,   ST7735_BLUE) ;
-    ST7735_DrawPixel(X+1, j,   ST7735_BLUE) ;
-  }
-  lastj = j;
+    else
+    {
+        ST7735_DrawPixel(X,   j,   ST7735_BLUE) ;
+        ST7735_DrawPixel(X+1, j,   ST7735_BLUE) ;
+    }
+    lastj = j;
 }
 
 // *************** ST7735_PlotPoints ********************
@@ -1025,39 +1084,42 @@ void ST7735_PlotLine(int32_t y){int32_t i,j;
 // Inputs: y1 is the y coordinate of the first point plotted
 //         y2 is the y coordinate of the second point plotted
 // Outputs: none
-void ST7735_PlotPoints(int32_t y1,int32_t y2){int32_t j;
-  if(y1<Ymin) y1=Ymin;
-  if(y1>Ymax) y1=Ymax;
-  // X goes from 0 to 127
-  // j goes from 159 to 32
-  // y=Ymax maps to j=32
-  // y=Ymin maps to j=159
-  j = 32+(127*(Ymax-y1))/Yrange;
-  if(j<32) j = 32;
-  if(j>159) j = 159;
-  ST7735_DrawPixel(X, j, ST7735_BLUE);
-  if(y2<Ymin) y2=Ymin;
-  if(y2>Ymax) y2=Ymax;
-  j = 32+(127*(Ymax-y2))/Yrange;
-  if(j<32) j = 32;
-  if(j>159) j = 159;
-  ST7735_DrawPixel(X, j, ST7735_BLACK);
+void ST7735_PlotPoints(int32_t y1,int32_t y2)
+{
+    int32_t j;
+    if(y1<Ymin) y1=Ymin;
+    if(y1>Ymax) y1=Ymax;
+    // X goes from 0 to 127
+    // j goes from 159 to 32
+    // y=Ymax maps to j=32
+    // y=Ymin maps to j=159
+    j = 32+(127*(Ymax-y1))/Yrange;
+    if(j<32) j = 32;
+    if(j>159) j = 159;
+    ST7735_DrawPixel(X, j, ST7735_BLUE);
+    if(y2<Ymin) y2=Ymin;
+    if(y2>Ymax) y2=Ymax;
+    j = 32+(127*(Ymax-y2))/Yrange;
+    if(j<32) j = 32;
+    if(j>159) j = 159;
+    ST7735_DrawPixel(X, j, ST7735_BLACK);
 }
 // *************** ST7735_PlotBar ********************
 // Used in the voltage versus time bar, plot one bar at y
 // It does not output to display until RIT128x96x4ShowPlot called
 // Inputs: y is the y coordinate of the bar plotted
 // Outputs: none
-void ST7735_PlotBar(int32_t y){
-int32_t j;
-  if(y<Ymin) y=Ymin;
-  if(y>Ymax) y=Ymax;
-  // X goes from 0 to 127
-  // j goes from 159 to 32
-  // y=Ymax maps to j=32
-  // y=Ymin maps to j=159
-  j = 32+(127*(Ymax-y))/Yrange;
-  ST7735_DrawFastVLine(X, j, 159-j, ST7735_BLACK);
+void ST7735_PlotBar(int32_t y)
+{
+    int32_t j;
+    if(y<Ymin) y=Ymin;
+    if(y>Ymax) y=Ymax;
+    // X goes from 0 to 127
+    // j goes from 159 to 32
+    // y=Ymax maps to j=32
+    // y=Ymin maps to j=159
+    j = 32+(127*(Ymax-y))/Yrange;
+    ST7735_DrawFastVLine(X, j, 159-j, ST7735_BLACK);
 }
 
 // *************** ST7735_PlotNext ********************
@@ -1066,12 +1128,16 @@ int32_t j;
 // It does not output to display
 // Inputs: none
 // Outputs: none
-void ST7735_PlotNext(void){
-  if(X==127){
-    X = 0;
-  } else{
-    X++;
-  }
+void ST7735_PlotNext(void)
+{
+    if(X==127)
+    {
+        X = 0;
+    }
+    else
+    {
+        X++;
+    }
 }
 
 // *************** ST7735_PlotNextErase ********************
@@ -1080,13 +1146,17 @@ void ST7735_PlotNext(void){
 // It clears the vertical space into which the next pixel will be drawn
 // Inputs: none
 // Outputs: none
-void ST7735_PlotNextErase(void){
-  if(X==127){
-    X = 0;
-  } else{
-    X++;
-  }
-  ST7735_DrawFastVLine(X,32,128,ST7735_Color565(228,228,228));
+void ST7735_PlotNextErase(void)
+{
+    if(X==127)
+    {
+        X = 0;
+    }
+    else
+    {
+        X++;
+    }
+    ST7735_DrawFastVLine(X,32,128,ST7735_Color565(228,228,228));
 }
 
 // *************** ST7735_OutChar ********************
@@ -1095,20 +1165,24 @@ void ST7735_PlotNextErase(void){
 // Color set by ST7735_SetTextColor
 // Inputs: 8-bit ASCII character
 // Outputs: none
-void ST7735_OutChar(char ch){
-  if((ch == 10) || (ch == 13) || (ch == 27)){
-    StY++; StX=0;
-    if(StY>15){
-      StY = 0;
+void ST7735_OutChar(char ch)
+{
+    if((ch == 10) || (ch == 13) || (ch == 27))
+    {
+        StY++; StX=0;
+        if(StY>15)
+        {
+            StY = 0;
+        }
+        ST7735_DrawString(0,StY,"                     ",StTextColor);
+        return;
     }
-    ST7735_DrawString(0,StY,"                     ",StTextColor);
+    ST7735_DrawCharS(StX*6,StY*10,ch,ST7735_YELLOW,ST7735_BLACK, 1);
+    StX++;
+    if(StX>20)
+    {
+        StX = 20;
+        ST7735_DrawCharS(StX*6,StY*10,'*',ST7735_RED,ST7735_BLACK, 1);
+    }
     return;
-  }
-  ST7735_DrawCharS(StX*6,StY*10,ch,ST7735_YELLOW,ST7735_BLACK, 1);
-  StX++;
-  if(StX>20){
-    StX = 20;
-    ST7735_DrawCharS(StX*6,StY*10,'*',ST7735_RED,ST7735_BLACK, 1);
-  }
-  return;
 }
