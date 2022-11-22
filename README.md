@@ -1,5 +1,5 @@
 
-# Code omposer Studio - ST7735
+# Code Composer Studio - ST7735
 
 #ATTENTION
 
