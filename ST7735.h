@@ -361,7 +361,7 @@ uint16_t StTextColor = ST7735_YELLOW;
 static uint8_t ColStart, RowStart; // some displays need this changed
 static uint8_t Rotation;           // 0 to 3
 static enum initRFlags TabColor;
-static int16_t _width = ST7735_TFTWIDTH;   // this could probably be a constant, except it is used in Adafruit_GFX and depends on image rotation
+static int16_t _width = ST7735_TFTWIDTH;
 static int16_t _height = ST7735_TFTHEIGHT;
 // 16 rows (0 to 15) and 21 characters (0 to 20)
 // Requires (11 + size*size*6*8) bytes of transmission for each character
@@ -439,7 +439,6 @@ ST7735S_WF18F(void)
     PIN_setOutputValue(PinHandle, SPI_RS,1);
     PIN_setOutputValue(PinHandle, IC_RST,1);
 
-
     delay(1000);
     asm(" nop");
     asm(" nop");
@@ -458,47 +457,6 @@ ST7735S_WF18F(void)
     WriteCommand(ST7735_COLMOD);    //65K Mode
     WriteParameter(0x05);
 
-    WriteCommand(ST7735_MADCTL);
-
-//    //ST7789S Frame rate setting
-//    WriWriteCommandB1); //Frame Rate Control (In normal mode/ Full colors)
-//    WriteParameter(0x05);
-//    WriteParameter(0x3A);
-//    WriteParameter(0x3A);
-//
-//    WriteCommand(0xB2); //Frame Rate Control (In Idle mode/ 8-colors)
-//    WriteParameter(0x05);
-//    WriteParameter(0x3A);
-//    WriteParameter(0x3A);
-
-    WriteCommand(ST7735_FRMCTR3); //Frame Rate Control (In Partial mode/ full colors)
-    WriteParameter(0x05);
-    WriteParameter(0x3A);
-    WriteParameter(0x3A);
-    WriteParameter(0x05);
-    WriteParameter(0x3A);
-    WriteParameter(0x3A);
-
-    WriteCommand(ST7735_INVCTR); //Dot Inversion
-    WriteParameter(0x03);
-
-//    //ST7789S Power setting
-//    WriteCommand(0xC0);    //Power Control 1
-//    WriteParameter(0x62);
-//    WriteParameter(0x02);
-//    WriteParameter(0x04);
-//
-//    WriteCommand(0xC1);    //Power Control 2
-//    WriteParameter(0xC0);
-//
-//    WriteCommand(0xC2);    //Power Control 3 (in Normal mode/ Full colors)
-//    WriteParameter(0x0D);
-//    WriteParameter(0x00);
-//
-//    WriteCommand(0xC3);    //Power Control 4 (in Idle mode/ 8-colors)
-//    WriteParameter(0x8D);
-//    WriteParameter(0x6A);
-
     WriteCommand(ST7735_PWCTR5);    //Power Control 5 (in Partial mode/ full-colors)
     WriteParameter(0x8D);
     WriteParameter(0xEE);
@@ -506,57 +464,8 @@ ST7735S_WF18F(void)
     WriteCommand(ST7735_VMCTR1);    //VCOM Control 1
     WriteParameter(0x12);
 
-    //ST7789S Gamma Setting
-    WriteCommand(ST7735_GMCTRP1); //Gamma (．+・polarity) Correction Characteristics Setting
-    WriteParameter(0x03);
-    WriteParameter(0x1B);
-    WriteParameter(0x12);
-    WriteParameter(0x11);
-    WriteParameter(0x3F);
-    WriteParameter(0x3A);
-    WriteParameter(0x32);
-    WriteParameter(0x34);
-    WriteParameter(0x2F);
-    WriteParameter(0x2B);
-    WriteParameter(0x30);
-    WriteParameter(0x3A);
-    WriteParameter(0x00);
-    WriteParameter(0x01);
-    WriteParameter(0x02);
-    WriteParameter(0x05);
-
-//    WriteCommand(0xE1); //Gamma ．-・polarity Correction Characteristics Setting
-//    WriteParameter(0x03);
-//    WriteParameter(0x1B);
-//    WriteParameter(0x12);
-//    WriteParameter(0x11);
-//    WriteParameter(0x32);
-//    WriteParameter(0x2F);
-//    WriteParameter(0x2A);
-//    WriteParameter(0x2F);
-//    WriteParameter(0x2E);
-//    WriteParameter(0x2C);
-//    WriteParameter(0x35);
-//    WriteParameter(0x3F);
-//    WriteParameter(0x00);
-//    WriteParameter(0x00);
-//    WriteParameter(0x01);
-//    WriteParameter(0x05);
-
-    WriteCommand(ST7735_PWCTR6); //Enable Gate power save mode
-    WriteParameter(0x8C);
-
-//    WriteCommand(0x2A); //Column Address Set
-//    WriteParameter(0x00);
-//    WriteParameter(0x00);//0
-//    WriteParameter(0x00);
-//    WriteParameter(0xA0);//127 0x7F
-//
-//    WriteCommand(0x2B); //Row Address Set
-//    WriteParameter(0x00);
-//    WriteParameter(0x00);//0
-//    WriteParameter(0x00);
-//    WriteParameter(0x80);//159 0x9F
+//    WriteCommand(ST7735_PWCTR6); //Enable Gate power save mode
+//    WriteParameter(0x8C);
 
     WriteCommand(ST7735_DISPON); //Display on
 }
@@ -693,22 +602,25 @@ void ST7735_DrawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color) {
 //        h     vertical height of the rectangle
 //        color 16-bit color, which can be produced by ST7735_Color565()
 // Output: none
-void ST7735_FillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
-  uint8_t hi = color >> 8, lo = color;
+void ST7735_FillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color)
+{
+    uint8_t hi = color >> 8, lo = color;
 
-  // rudimentary clipping (drawChar w/big text requires this)
-  if((x >= _width) || (y >= _height)) return;
-  if((x + w - 1) >= _width)  w = _width  - x;
-  if((y + h - 1) >= _height) h = _height - y;
+    // rudimentary clipping (drawChar w/big text requires this)
+    if((x >= _width) || (y >= _height)) return;
+    if((x + w - 1) >= _width)  w = _width  - x;
+    if((y + h - 1) >= _height) h = _height - y;
 
-  setAddrWindow(x, y, x+w-1, y+h-1);
+    setAddrWindow(x, y, x+w-1, y+h-1);
 
-  for(y=h; y>0; y--) {
-    for(x=w; x>0; x--) {
-      WriteParameter(hi);
-      WriteParameter(lo);
+    for(y=h; y>0; y--)
+    {
+        for(x=w; x>0; x--)
+        {
+            WriteParameter(hi);
+            WriteParameter(lo);
+        }
     }
-  }
 }
 
 //------------ST7735_FillScreen------------
@@ -815,8 +727,7 @@ void ST7735_DrawBitmap(int16_t x, int16_t y, const uint16_t *image, int16_t w, i
 }
 
 //------------ST7735_DrawCharS------------
-// Simple character draw function.  This is the same function from
-// Adafruit_GFX.c but adapted for this processor.  However, each call
+// Simple character draw function. However, each call
 // to ST7735_DrawPixel() calls setAddrWindow(), which needs to send
 // many extra data and commands.  If the background color is the same
 // as the text color, no background will be printed, and text can be
