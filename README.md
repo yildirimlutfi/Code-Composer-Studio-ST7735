@@ -6,9 +6,13 @@
 Project running in Code Composer Studio for CC1350 Launchpad. If you just import the project to CCS doesn't work the project. You should copy the files to your project or you must add dependencies tirtos_bulids_CC1350_LAUNCHXL_release_ccs .
 
 SPI_CS  IOID_20
+
 IC_RST IOID_13
+
 SPI_RS  IOID_9
+
 SPI_SDA IOID_14
+
 SPI_SCK IOID_10
 
 ![st7735](https://user-images.githubusercontent.com/58117960/201872901-4a890e25-c713-4aea-87e9-642263738467.png)
